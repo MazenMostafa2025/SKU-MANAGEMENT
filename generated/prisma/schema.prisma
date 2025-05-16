@@ -1,0 +1,53 @@
+model Branch {
+  id       String @id @default(cuid())
+  name     String
+  location String
+  contact  String
+  skus     Sku[]
+}
+
+model Sku {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  name          String
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id])
+  subcategoryId String
+  brand         Brand       @relation(fields: [brandId], references: [id])
+  brandId       String
+  isActive      Boolean     @default(true)
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  branchId      String
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String
+  skus          Sku[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id         String   @id @default(cuid())
+  name       String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  skus       Sku[]
+}
+
+model Brand {
+  id   String @id @default(cuid())
+  name String
+  skus Sku[]
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
